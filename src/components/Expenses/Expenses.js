@@ -6,35 +6,32 @@ import './Expenses.css';
 
 const Expenses = (props) => {
   const [filteredYear, setFilteredYear] = useState('2020');
-  const [filteredInfoText, setFilteredInfoText] = useState('2019,2021 & 2022');
 
   const filteredChangeHandler = selectedYear => {
     setFilteredYear(selectedYear);
-    if (selectedYear === '2019') {
-      setFilteredInfoText('2020, 2021 & 2022');
-    } else if (selectedYear === '2020') {
-      setFilteredInfoText('2019, 2021 & 2022');
-    } else if (selectedYear === '2021') {
-      setFilteredInfoText('2019, 2020 & 2022');
-    } else {
-      setFilteredInfoText('2019, 2020 & 2021');
-    }
+  }
+
+  const filteredExpenses = props.items.filter(expenses => {
+    return expenses.date.getFullYear().toString() === filteredYear;
+  })
+
+  let expensesContent = <p style={{ color: '#fff' }}>No expenses found.</p>;
+
+  if (filteredExpenses.length > 0) {
+    expensesContent = filteredExpenses.map(item => (
+      <ExpenseItem key={item.id}
+        title={item.title}
+        amount={item.amount}
+        date={item.date}
+      />
+    ))
   }
 
   return (
     <div>
       <Card className="expenses">
         <ExpensesFilter selected={filteredYear} onChangeFilter={filteredChangeHandler} />
-        <p style={{ color: '#fff' }}>Data for years {filteredInfoText} is hidden.</p>
-
-        {props.items.map(item => (
-          <ExpenseItem
-            title={item.title}
-            amount={item.amount}
-            date={item.date}
-          />
-        ))}
-
+        {expensesContent}
       </Card>
     </div>
   );
